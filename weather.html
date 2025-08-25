@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - Indian Cities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 25px;
+            text-align: center;
+            background: linear-gradient(120deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .search-container {
+            padding: 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 50px 0 0 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #4facfe;
+        }
+        
+        .search-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #2a93fc;
+        }
+        
+        .examples {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .weather-info {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .location {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .datetime {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .current-weather {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .temperature {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-right: 15px;
+        }
+        
+        .weather-icon {
+            font-size: 3.5rem;
+            color: #4facfe;
+        }
+        
+        .description {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .detail-card {
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #2c3e50;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .detail-card i {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .detail-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        
+        .detail-card p {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .forecast {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .forecast-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .forecast-items {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        
+        .forecast-item {
+            text-align: center;
+        }
+        
+        .forecast-day {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            color: #7f8c8d;
+        }
+        
+        .forecast-icon {
+            font-size: 1.5rem;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+        
+        .forecast-temp {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 500px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .temperature {
+                font-size: 3.5rem;
+            }
+            
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .forecast-items {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Weather App</h1>
+            <p>Real-time weather updates for Indian cities</p>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Enter Indian city name">
+                <button class="search-btn">Search</button>
+            </div>
+            <div class="examples">Try: Mumbai, Delhi, Bangalore, Hyderabad, etc.</div>
+        </div>
+        
+        <div class="weather-info">
+            <h2 class="location">Mumbai, IN</h2>
+            <p class="datetime">10:08 PM • Updated just now</p>
+            
+            <div class="current-weather">
+                <div class="temperature">32°C</div>
+                <div class="weather-icon">☀️</div>
+            </div>
+            
+            <div class="description">Sunny</div>
+            
+            <div class="weather-details">
+                <div class="detail-card">
+                    <h4>PRESSURE</h4>
+                    <p>1008 hPa</p>
+                </div>
+                <div class="detail-card">
+                    <h4>HUMIDITY</h4>
+                    <p>70%</p>
+                </div>
+                <div class="detail-card">
+                    <h4>WIND SPEED</h4>
+                    <p>5 km/h</p>
+                </div>
+                <div class="detail-card">
+                    <h4>FEELS LIKE</h4>
+                    <p>35°C</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="forecast">
+            <h3 class="forecast-title">5-Day Forecast</h3>
+            <div class="forecast-items">
+                <div class="forecast-item">
+                    <div class="forecast-day">Today</div>
+                    <div class="forecast-icon">☀️</div>
+                    <div class="forecast-temp">33°</div>
+                    <div class="forecast-temp" style="color: #7f8c8d;">28°</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-day">Sun 24</div>
+                    <div class="forecast-icon">⛅</div>
+                    <div class="forecast-temp">34°</div>
+                    <div class="forecast-temp" style="color: #7f8c8d;">27°</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-day">Mon 25</div>
+                    <div class="forecast-icon">⛅</div>
+                    <div class="forecast-temp">34°</div>
+                    <div class="forecast-temp" style="color: #7f8c8d;">27°</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-day">Tue 26</div>
+                    <div class="forecast-icon">🌧️</div>
+                    <div class="forecast-temp">34°</div>
+                    <div class="forecast-temp" style="color: #7f8c8d;">27°</div>
+                </div>
+                <div class="forecast-item">
+                    <div class="forecast-day">Wed 27</div>
+                    <div class="forecast-icon">🌧️</div>
+                    <div class="forecast-temp">33°</div>
+                    <div class="forecast-temp" style="color: #7f8c8d;">27°</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Weather App &copy; 2023</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBtn = document.querySelector('.search-btn');
+            const searchInput = document.querySelector('.search-input');
+            const locationElement = document.querySelector('.location');
+            const datetimeElement = document.querySelector('.datetime');
+            const temperatureElement = document.querySelector('.temperature');
+            const weatherIconElement = document.querySelector('.weather-icon');
+            const descriptionElement = document.querySelector('.description');
+            const detailCards = document.querySelectorAll('.detail-card');
+            const forecastItems = document.querySelectorAll('.forecast-item');
+            
+            // Weather data for major Indian cities
+            const indianCitiesWeatherData = {
+                'mumbai': {
+                    location: 'Mumbai, IN',
+                    temperature: '32°C',
+                    icon: '☀️',
+                    description: 'Sunny',
+                    details: {
+                        pressure: '1008 hPa',
+                        humidity: '70%',
+                        wind: '5 km/h',
+                        feelsLike: '35°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '☀️', high: '33°', low: '28°' },
+                        { day: 'Sun 24', icon: '⛅', high: '34°', low: '27°' },
+                        { day: 'Mon 25', icon: '⛅', high: '34°', low: '27°' },
+                        { day: 'Tue 26', icon: '🌧️', high: '34°', low: '27°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '33°', low: '27°' }
+                    ]
+                },
+                'delhi': {
+                    location: 'Delhi, IN',
+                    temperature: '28°C',
+                    icon: '⛅',
+                    description: 'Partly Cloudy',
+                    details: {
+                        pressure: '1010 hPa',
+                        humidity: '65%',
+                        wind: '8 km/h',
+                        feelsLike: '30°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '⛅', high: '30°', low: '26°' },
+                        { day: 'Sun 24', icon: '☀️', high: '32°', low: '25°' },
+                        { day: 'Mon 25', icon: '☀️', high: '33°', low: '26°' },
+                        { day: 'Tue 26', icon: '⛅', high: '31°', low: '25°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '29°', low: '24°' }
+                    ]
+                },
+                'bangalore': {
+                    location: 'Bangalore, IN',
+                    temperature: '26°C',
+                    icon: '⛅',
+                    description: 'Cloudy',
+                    details: {
+                        pressure: '1012 hPa',
+                        humidity: '75%',
+                        wind: '6 km/h',
+                        feelsLike: '28°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '⛅', high: '28°', low: '22°' },
+                        { day: 'Sun 24', icon: '🌧️', high: '27°', low: '21°' },
+                        { day: 'Mon 25', icon: '🌧️', high: '26°', low: '20°' },
+                        { day: 'Tue 26', icon: '⛅', high: '27°', low: '21°' },
+                        { day: 'Wed 27', icon: '☀️', high: '29°', low: '22°' }
+                    ]
+                },
+                'hyderabad': {
+                    location: 'Hyderabad, IN',
+                    temperature: '30°C',
+                    icon: '☀️',
+                    description: 'Sunny',
+                    details: {
+                        pressure: '1009 hPa',
+                        humidity: '60%',
+                        wind: '7 km/h',
+                        feelsLike: '33°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '☀️', high: '33°', low: '27°' },
+                        { day: 'Sun 24', icon: '☀️', high: '34°', low: '26°' },
+                        { day: 'Mon 25', icon: '⛅', high: '32°', low: '25°' },
+                        { day: 'Tue 26', icon: '🌧️', high: '30°', low: '24°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '29°', low: '23°' }
+                    ]
+                },
+                'chennai': {
+                    location: 'Chennai, IN',
+                    temperature: '34°C',
+                    icon: '☀️',
+                    description: 'Sunny',
+                    details: {
+                        pressure: '1007 hPa',
+                        humidity: '68%',
+                        wind: '9 km/h',
+                        feelsLike: '38°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '☀️', high: '36°', low: '29°' },
+                        { day: 'Sun 24', icon: '☀️', high: '35°', low: '28°' },
+                        { day: 'Mon 25', icon: '⛅', high: '34°', low: '28°' },
+                        { day: 'Tue 26', icon: '🌧️', high: '33°', low: '27°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '32°', low: '26°' }
+                    ]
+                },
+                'kolkata': {
+                    location: 'Kolkata, IN',
+                    temperature: '31°C',
+                    icon: '🌧️',
+                    description: 'Light Rain',
+                    details: {
+                        pressure: '1006 hPa',
+                        humidity: '78%',
+                        wind: '5 km/h',
+                        feelsLike: '35°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '🌧️', high: '33°', low: '28°' },
+                        { day: 'Sun 24', icon: '🌧️', high: '32°', low: '27°' },
+                        { day: 'Mon 25', icon: '⛅', high: '31°', low: '26°' },
+                        { day: 'Tue 26', icon: '☀️', high: '32°', low: '27°' },
+                        { day: 'Wed 27', icon: '☀️', high: '33°', low: '28°' }
+                    ]
+                },
+                'pune': {
+                    location: 'Pune, IN',
+                    temperature: '27°C',
+                    icon: '⛅',
+                    description: 'Partly Cloudy',
+                    details: {
+                        pressure: '1011 hPa',
+                        humidity: '65%',
+                        wind: '6 km/h',
+                        feelsLike: '29°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '⛅', high: '29°', low: '23°' },
+                        { day: 'Sun 24', icon: '☀️', high: '30°', low: '22°' },
+                        { day: 'Mon 25', icon: '☀️', high: '31°', low: '23°' },
+                        { day: 'Tue 26', icon: '⛅', high: '29°', low: '22°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '28°', low: '21°' }
+                    ]
+                },
+                'ahmedabad': {
+                    location: 'Ahmedabad, IN',
+                    temperature: '33°C',
+                    icon: '☀️',
+                    description: 'Sunny',
+                    details: {
+                        pressure: '1005 hPa',
+                        humidity: '55%',
+                        wind: '10 km/h',
+                        feelsLike: '36°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '☀️', high: '35°', low: '28°' },
+                        { day: 'Sun 24', icon: '☀️', high: '36°', low: '27°' },
+                        { day: 'Mon 25', icon: '☀️', high: '37°', low: '29°' },
+                        { day: 'Tue 26', icon: '⛅', high: '35°', low: '27°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '33°', low: '26°' }
+                    ]
+                },
+                'jaipur': {
+                    location: 'Jaipur, IN',
+                    temperature: '30°C',
+                    icon: '☀️',
+                    description: 'Sunny',
+                    details: {
+                        pressure: '1008 hPa',
+                        humidity: '50%',
+                        wind: '8 km/h',
+                        feelsLike: '32°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '☀️', high: '33°', low: '26°' },
+                        { day: 'Sun 24', icon: '☀️', high: '34°', low: '25°' },
+                        { day: 'Mon 25', icon: '☀️', high: '35°', low: '26°' },
+                        { day: 'Tue 26', icon: '⛅', high: '33°', low: '25°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '31°', low: '24°' }
+                    ]
+                },
+                'lucknow': {
+                    location: 'Lucknow, IN',
+                    temperature: '29°C',
+                    icon: '⛅',
+                    description: 'Partly Cloudy',
+                    details: {
+                        pressure: '1009 hPa',
+                        humidity: '62%',
+                        wind: '7 km/h',
+                        feelsLike: '31°C'
+                    },
+                    forecast: [
+                        { day: 'Today', icon: '⛅', high: '32°', low: '25°' },
+                        { day: 'Sun 24', icon: '☀️', high: '33°', low: '26°' },
+                        { day: 'Mon 25', icon: '☀️', high: '34°', low: '27°' },
+                        { day: 'Tue 26', icon: '⛅', high: '32°', low: '25°' },
+                        { day: 'Wed 27', icon: '🌧️', high: '30°', low: '24°' }
+                    ]
+                }
+            };
+            
+            // Update time function
+            function updateDateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                datetimeElement.textContent = `${timeString} • Updated just now`;
+            }
+            
+            // Initial time update
+            updateDateTime();
+            
+            // Update time every minute
+            setInterval(updateDateTime, 60000);
+            
+            // Search functionality
+            searchBtn.addEventListener('click', function() {
+                const city = searchInput.value.trim().toLowerCase();
+                if (indianCitiesWeatherData[city]) {
+                    updateWeatherData(indianCitiesWeatherData[city]);
+                } else {
+                    alert('City not found. Try: Mumbai, Delhi, Bangalore, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Jaipur, or Lucknow');
+                }
+            });
+            
+            // Allow searching with Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBtn.click();
+                }
+            });
+            
+            // Update weather data function
+            function updateWeatherData(data) {
+                locationElement.textContent = data.location;
+                temperatureElement.textContent = data.temperature;
+                weatherIconElement.textContent = data.icon;
+                descriptionElement.textContent = data.description;
+                
+                // Update detail cards
+                const detailValues = [
+                    data.details.pressure,
+                    data.details.humidity,
+                    data.details.wind,
+                    data.details.feelsLike
+                ];
+                
+                detailCards.forEach((card, index) => {
+                    card.querySelector('p').textContent = detailValues[index];
+                });
+                
+                // Update forecast
+                forecastItems.forEach((item, index) => {
+                    if (data.forecast[index]) {
+                        const forecast = data.forecast[index];
+                        item.querySelector('.forecast-day').textContent = forecast.day;
+                        item.querySelector('.forecast-icon').textContent = forecast.icon;
+                        const tempElements = item.querySelectorAll('.forecast-temp');
+                        tempElements[0].textContent = forecast.high;
+                        tempElements[1].textContent = forecast.low;
+                    }
+                });
+                
+                // Update time
+                updateDateTime();
+            }
+        });
+    </script>
+</body>
+</html>
